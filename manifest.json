@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "TikTok 댓글 도우미",
+  "version": "3.0.0",
+  "description": "슬랙 서포터즈 메시지를 붙여넣으면 내 이름의 댓글을 찾아 링크를 순서대로 열고, 댓글 입력과 게시까지 자동으로 시도합니다. 각 항목은 사람이 결과를 확인하고 '완료' 버튼을 눌러야 다음으로 넘어갑니다.",
+  "permissions": ["tabs", "storage", "clipboardWrite"],
+  "host_permissions": ["https://www.tiktok.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "TikTok 댓글 도우미 열기"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.tiktok.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
