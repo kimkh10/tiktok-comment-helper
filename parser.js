@@ -3,7 +3,7 @@
 const TIKTOK_URL_REGEX = /https?:\/\/(?:www\.)?tiktok\.com\/@[^/\s]+\/video\/\d+/g;
 const STRICT_TIKTOK_URL_REGEX = /^https:\/\/(?:www\.)?tiktok\.com\/@[^/]+\/video\/\d+$/;
 const FOOTER_REGEX = /[—-]\s*Made by/i;
-const NUMBERED_LINE_SPLIT_REGEX = /^\s*\d{1,2}\.\s+/m;
+const NUMBERED_LINE_SPLIT_REGEX = /^\s*\*?\d{1,2}\.\s+/m;
 
 function isValidTiktokUrl(url) {
   return STRICT_TIKTOK_URL_REGEX.test(url);
@@ -20,7 +20,8 @@ function parseEntries(blockBody) {
       .split(/\r?\n/)
       .map((l) => l.trim())
       .filter((l) => l.length > 0);
-    const name = lines[0] || '';
+    // 슬랙 API 원문은 "*4. Anthony*"처럼 이름이 마크다운 굵게(*)로 감싸여 오는 경우가 있어 제거한다.
+    const name = (lines[0] || '').replace(/\*+$/, '').trim();
     const comment = lines.slice(1).join('\n').trim();
     return { name, comment };
   });
