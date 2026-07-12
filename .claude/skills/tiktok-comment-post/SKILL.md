@@ -47,19 +47,19 @@ description: 슬랙 #틱톡_서포터즈 채널의 오늘자 메시지에서 내
    - 큐에 있는 (링크, 댓글) 목록을 표로 보여준다 (정보 제공용 — 게시를 하는 게 아니므로 승인을 기다릴 필요는 없다. 바로 진행한다).
 
 4. **브라우저 도구 준비**
-   - ToolSearch로 `mcp__claude-in-chrome__tabs_context_mcp,mcp__claude-in-chrome__navigate,mcp__claude-in-chrome__computer,mcp__claude-in-chrome__javascript_tool,mcp__claude-in-chrome__get_page_text,mcp__claude-in-chrome__tabs_create_mcp` 를 한 번에 로드한다.
+   - ToolSearch로 `mcp__claude-in-chrome__tabs_context_mcp,mcp__claude-in-chrome__navigate,mcp__claude-in-chrome__computer,mcp__claude-in-chrome__javascript_tool,mcp__claude-in-chrome__get_page_text,mcp__claude-in-chrome__tabs_create_mcp,mcp__claude-in-chrome__tabs_close_mcp` 를 한 번에 로드한다.
    - `tabs_context_mcp`로 탭 그룹을 확인/생성한다.
 
 5. **큐에 있는 항목마다 새 탭을 하나씩 연다** (탭을 재사용하지 않고 항목 수만큼 새로 만든다 — 예: 3개 댓글이면 탭 3개가 끝까지 열려 있어야 함):
    1. `tabs_create_mcp`로 새 탭을 만들고 `navigate`로 해당 링크로 이동.
    2. `computer`의 `screenshot`으로 로드 상태를 확인한다. 화면에 "Please wait" 같은 문구만 있고 실제 영상이 안 보이면 봇 검증 화면이다. 이 경우 곧바로 포기하지 않고, `computer`의 `wait`(10초)로 대기한 뒤 같은 탭에서 `navigate`로 같은 링크에 다시 이동해 스크린샷으로 재확인한다. **최대 3번까지만** 이렇게 재시도한다 (대기 시간을 10초→15초→20초로 조금씩 늘린다). 3번째까지도 봇 검증 화면이면 그때는 "차단됨"으로 기록하고 그대로 둔 채 다음 항목으로 넘어간다 (그 이상 반복하지 않는다 — 과도한 반복 자체가 검증을 더 유발할 수 있음이 테스트로 확인됨).
    3. 오른쪽에 댓글 목록/입력창이 안 보이면, 영상 오른쪽의 댓글 아이콘(말풍선 모양)을 스크린샷으로 위치를 확인해 `computer`의 `left_click`으로 클릭해서 댓글 패널을 연다.
-   4. `get_page_text` 또는 `javascript_tool`로 댓글 목록에 게시하려는 댓글과 완전히 동일한 텍스트가 이미 있는지 확인한다. 있으면 "이미 게시됨"으로 기록하고 입력 없이 다음 항목으로.
+   4. `get_page_text` 또는 `javascript_tool`로 댓글 목록에 게시하려는 댓글과 완전히 동일한 텍스트가 이미 있는지 확인한다. 있으면 "이미 게시됨"으로 기록하고, `tabs_close_mcp`로 이 탭을 닫은 뒤 다음 항목으로 넘어간다 (더 볼 필요가 없으니 열어둘 필요 없음).
    5. 스크린샷을 보고 댓글 입력창의 위치를 파악해 `computer`의 `left_click`으로 클릭한다.
    6. `computer`의 `type` 액션으로 댓글 텍스트를 실제로 타이핑한다.
    7. **스크린샷으로만** 텍스트가 입력창에 정상적으로 남아있는지 확인한다 (이 시점에 `javascript_tool`을 쓰지 않는다). 남아있으면 "입력 완료", 사라졌거나 안 보이면 "입력 실패 - 직접 확인 필요"로 기록한다.
    8. **여기서 멈춘다. 게시 버튼은 누르지 않는다.** 이 탭은 열어둔 채 다음 항목으로 넘어간다.
 
 6. **최종 보고**
-   - 사용한 이름, 가져온 슬랙 메시지 기준(오늘 날짜 등), 열어둔 탭 수와 각 탭의 상태(입력 완료 / 이미 게시됨 / 차단됨 / 실패)를 표로 정리해서 알려준다.
-   - "N개 탭에 댓글이 입력되어 있습니다. 확인 후 각 탭에서 직접 게시 버튼을 눌러주세요."라고 안내하며 끝낸다.
+   - 사용한 이름, 가져온 슬랙 메시지 기준(오늘 날짜 등), 각 항목의 상태(입력 완료 - 탭 열려있음 / 이미 게시됨 - 탭 닫음 / 차단됨 - 탭 열려있음 / 실패 - 탭 열려있음)를 표로 정리해서 알려준다.
+   - "입력 완료된 탭들에서 직접 확인 후 게시 버튼을 눌러주세요. 이미 게시된 항목은 탭을 닫아뒀습니다."라고 안내하며 끝낸다.
