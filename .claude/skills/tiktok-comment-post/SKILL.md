@@ -47,8 +47,12 @@ description: 슬랙 #틱톡_서포터즈 채널의 오늘자 메시지에서 내
    - 큐에 있는 (링크, 댓글) 목록을 표로 보여준다 (정보 제공용 — 게시를 하는 게 아니므로 승인을 기다릴 필요는 없다. 바로 진행한다).
 
 4. **브라우저 도구 준비**
-   - ToolSearch로 `mcp__claude-in-chrome__tabs_context_mcp,mcp__claude-in-chrome__navigate,mcp__claude-in-chrome__computer,mcp__claude-in-chrome__javascript_tool,mcp__claude-in-chrome__get_page_text,mcp__claude-in-chrome__tabs_create_mcp,mcp__claude-in-chrome__tabs_close_mcp` 를 한 번에 로드한다.
-   - `tabs_context_mcp`로 탭 그룹을 확인/생성한다.
+   - ToolSearch로 `mcp__claude-in-chrome__tabs_context_mcp,mcp__claude-in-chrome__navigate,mcp__claude-in-chrome__computer,mcp__claude-in-chrome__javascript_tool,mcp__claude-in-chrome__get_page_text,mcp__claude-in-chrome__tabs_create_mcp,mcp__claude-in-chrome__tabs_close_mcp,mcp__claude-in-chrome__list_connected_browsers,mcp__claude-in-chrome__select_browser,mcp__claude-in-chrome__switch_browser` 를 한 번에 로드한다.
+   - **어떤 Chrome(창/프로필)에서 작업할지 먼저 정한다** — 개인 구글 계정 창 등 다른 계정 브라우저가 같이 켜져 있어도 TikTok이 로그인된 올바른 창을 골라 쓰기 위함이다.
+     - `list_connected_browsers`로 연결된 브라우저 목록을 가져온다.
+     - 연결된 브라우저가 **1개뿐이면** 그걸 그대로 쓴다 (별도로 묻지 않는다).
+     - **2개 이상이면**, `AskUserQuestion`으로 연결된 브라우저를 하나도 빠짐없이 각각 옵션으로 제시하고(라벨은 display name, 괄호 안에 deviceId), 마지막 옵션으로 정확히 다음 문구를 넣는다: "Open a confirmation screen in every connected Chrome extension and let me select the right one there." 사용자가 특정 브라우저를 고르면 그 deviceId로 `select_browser`를 호출하고, 마지막 옵션을 고르면 `switch_browser`를 호출한다.
+   - `tabs_context_mcp`로 (선택된 브라우저 안에서) 탭 그룹을 확인/생성한다.
 
 5. **큐에 있는 항목마다 새 탭을 하나씩 연다** (탭을 재사용하지 않고 항목 수만큼 새로 만든다 — 예: 3개 댓글이면 탭 3개가 끝까지 열려 있어야 함):
    1. `tabs_create_mcp`로 새 탭을 만들고 `navigate`로 해당 링크로 이동.
